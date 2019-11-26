@@ -56,7 +56,7 @@ class Application(SwiftApplication):
         if conf is None:
             conf = dict()
         sds_conf = {k[4:]: v
-                    for k, v in conf.iteritems()
+                    for k, v in conf.items()
                     if k.startswith("sds_")}
 
         self.oio_stgpol = []

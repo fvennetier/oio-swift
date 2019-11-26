@@ -34,4 +34,4 @@ class TestModuleMethods(unittest.TestCase):
     def test_decode_secret_ok(self):
         decoded = crypto_utils.decode_secret(
             'YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=')
-        self.assertEqual('a' * 32, decoded)
+        self.assertEqual(b'a' * 32, decoded)
