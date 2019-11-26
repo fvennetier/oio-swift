@@ -17,6 +17,7 @@ import base64
 import json
 import importlib
 from paste.deploy import loadwsgi
+from six import string_types
 from six.moves.urllib.parse import parse_qs, quote
 from swift.common.swob import Request, HTTPInternalServerError
 from swift.common.utils import config_true_value, \
@@ -64,7 +65,7 @@ except ImportError:
             if not sentinel_name:
                 raise ValueError("missing parameter 'sentinel_name'")
 
-            if isinstance(sentinel_hosts, basestring):
+            if isinstance(sentinel_hosts, string_types):
                 sentinel_hosts = sentinel_hosts.split(',')
             self._sentinel_hosts = [(h, int(p)) for h, p, in (hp.rsplit(':', 1)
                                     for hp in sentinel_hosts)]
@@ -363,16 +364,16 @@ class FakeRedis(object):
     def hkeys(self, key, match=None):
         if not self._keys.get(key, None):
             return []
-        return self._keys[key].iterkeys()
+        return self._keys[key].keys()
 
     def zkeys(self, key, prefix, delimiter, marker=None, recursive=False,
               limit=DEFAULT_LIMIT):
         if not self._keys.get(key, None):
             return []
-        return self._keys[key].iterkeys()
+        return self._keys[key].keys()
 
     def keys(self, pattern):
-        return self._keys.iterkeys()
+        return self._keys.keys()
 
     def exists(self, key):
         return key in self._keys
@@ -679,7 +680,7 @@ class ContainerHierarchyMiddleware(AutoContainerBase):
         prefix_key = self.key(account, container, "")
         if self.redis_keys_format == REDIS_KEYS_FORMAT_V1:
             key = self.key(account, container, '*', prefix) + '*'
-            matches = [k[len(prefix_key):].split(':', 1)
+            matches = [tuple(k[len(prefix_key):].split(':', 1))
                        for k in self.conn.keys(key)]
         else:
             matches = list()
@@ -941,7 +942,7 @@ class ContainerHierarchyMiddleware(AutoContainerBase):
 
         for obj in items:
             if 'name' in obj:
-                obj['name'] = obj_prefix.decode('utf-8') + obj['name']
+                obj['name'] = obj_prefix + obj['name']
                 yield obj
 
     def should_bypass(self, env):

@@ -1,5 +1,5 @@
 # Copyright (c) 2010-2012 OpenStack Foundation
-# Copyright (c) 2016-2018 OpenIO SAS
+# Copyright (c) 2016-2019 OpenIO SAS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ def get_response_headers(info):
         'X-Timestamp': Timestamp(info['ctime']).normal,
     }
 
-    for k, v in info['metadata'].iteritems():
+    for k, v in info['metadata'].items():
         if v != '':
             resp_headers[k] = v
 
@@ -110,6 +110,7 @@ def account_listing_response(account, req, response_content_type,
             resp.charset = 'utf-8'
             return resp
         account_list = '\n'.join(r[0] for r in listing) + '\n'
+    account_list = account_list.encode('utf-8')
     ret = HTTPOk(body=account_list, request=req, headers=resp_headers)
     ret.content_type = response_content_type
     ret.charset = 'utf-8'
@@ -144,7 +145,7 @@ class AccountController(SwiftAccountController):
         """Handler for HTTP GET requests."""
         if len(self.account_name) > constraints.MAX_ACCOUNT_NAME_LENGTH:
             resp = HTTPBadRequest(request=req)
-            resp.body = 'Account name length of %d longer than %d' % \
+            resp.body = b'Account name length of %d longer than %d' % \
                         (len(self.account_name),
                          constraints.MAX_ACCOUNT_NAME_LENGTH)
             return resp
@@ -163,7 +164,7 @@ class AccountController(SwiftAccountController):
         prefix = get_param(req, 'prefix')
         delimiter = get_param(req, 'prefix')
         if delimiter and (len(delimiter) > 1 or ord(delimiter) > 254):
-            return HTTPPreconditionFailed(body='Bad delimiter')
+            return HTTPPreconditionFailed(body=b'Bad delimiter')
         limit = constraints.ACCOUNT_LISTING_LIMIT
         given_limit = get_param(req, 'limit')
         if given_limit and given_limit.isdigit():
@@ -171,7 +172,7 @@ class AccountController(SwiftAccountController):
             if limit > constraints.ACCOUNT_LISTING_LIMIT:
                 return HTTPPreconditionFailed(
                     request=req,
-                    body='Maximum limit is %d' %
+                    body=b'Maximum limit is %d' %
                          constraints.ACCOUNT_LISTING_LIMIT)
         marker = get_param(req, 'marker')
         end_marker = get_param(req, 'end_marker')
@@ -210,7 +211,7 @@ class AccountController(SwiftAccountController):
         """HTTP HEAD request handler."""
         if len(self.account_name) > constraints.MAX_ACCOUNT_NAME_LENGTH:
             resp = HTTPBadRequest(request=req)
-            resp.body = 'Account name length of %d longer than %d' % \
+            resp.body = b'Account name length of %d longer than %d' % \
                         (len(self.account_name),
                          constraints.MAX_ACCOUNT_NAME_LENGTH)
             return resp
@@ -248,7 +249,7 @@ class AccountController(SwiftAccountController):
             return error_response
         if len(self.account_name) > constraints.MAX_ACCOUNT_NAME_LENGTH:
             resp = HTTPBadRequest(request=req)
-            resp.body = 'Account name length of %d longer than %d' % \
+            resp.body = b'Account name length of %d longer than %d' % \
                         (len(self.account_name),
                          constraints.MAX_ACCOUNT_NAME_LENGTH)
             return resp
@@ -285,7 +286,7 @@ class AccountController(SwiftAccountController):
         """HTTP POST request handler."""
         if len(self.account_name) > constraints.MAX_ACCOUNT_NAME_LENGTH:
             resp = HTTPBadRequest(request=req)
-            resp.body = 'Account name length of %d longer than %d' % \
+            resp.body = b'Account name length of %d longer than %d' % \
                         (len(self.account_name),
                          constraints.MAX_ACCOUNT_NAME_LENGTH)
             return resp

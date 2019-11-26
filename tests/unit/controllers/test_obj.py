@@ -19,7 +19,7 @@ from tests.unit import FakeStorageAPI, FakeMemcache, debug_logger
 
 
 def fake_stream(length, exception=None):
-    for i in "X" * length:
+    for i in b'X' * length:
         yield i
     if exception:
         # pylint: disable=raising-bad-type

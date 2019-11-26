@@ -108,14 +108,15 @@ class OioContainerHierarchy(unittest.TestCase):
              mock.call('CS:a:c:obj', match='d1/d2/*')])
 
     def _test_recursive_listing(self):
+        body = json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "last_modified": "2018-04-20T09:40:59.000000",
+                            "bytes": 0, "name": "o",
+                            "content_type": "application/octet-stream"}])
         self.app.register(
             'GET',
             '/v1/a/c%2Fd1%2Fd2%2Fd3?prefix=&limit=10000&format=json',
             swob.HTTPOk, {},
-            json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
-                         "last_modified": "2018-04-20T09:40:59.000000",
-                         "bytes": 0, "name": "o",
-                         "content_type": "application/octet-stream"}]))
+            body.encode('utf-8'))
 
         req = Request.blank('/v1/a/c?prefix=d1%2Fd2%2F', method='GET')
         resp = self.call_ch(req)
@@ -138,14 +139,15 @@ class OioContainerHierarchy(unittest.TestCase):
              mock.call('CS:a:c:obj', match='d 1/d2/*')])
 
     def _test_listing_with_space(self):
+        body = json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "last_modified": "2018-04-20T09:40:59.000000",
+                            "bytes": 0, "name": "o",
+                            "content_type": "application/octet-stream"}])
         self.app.register(
             'GET',
             '/v1/a/c%2Fd 1%2Fd2?prefix=&limit=10000&format=json',
             swob.HTTPOk, {},
-            json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
-                         "last_modified": "2018-04-20T09:40:59.000000",
-                         "bytes": 0, "name": "o",
-                         "content_type": "application/octet-stream"}]))
+            body.encode('utf-8'))
 
         req = Request.blank('/v1/a/c?prefix=d%201%2Fd2%2F', method='GET')
         resp = self.call_ch(req)
@@ -173,13 +175,14 @@ class OioContainerHierarchy(unittest.TestCase):
         else:
             self.assertIn('d1/d2/d3/', self.ch.conn._keys['CS:a:c:cnt'])
 
+        body = json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "last_modified": "2018-04-20T09:40:59.000000",
+                            "bytes": 0, "name": "o",
+                            "content_type": "application/octet-stream"}])
         self.app.register(
             'GET', '/v1/a/c%2Fd1%2Fd2%2Fd3?prefix=&limit=1&format=json',
             swob.HTTPOk, {},
-            json.dumps([{"hash": "d41d8cd98f00b204e9800998ecf8427e",
-                         "last_modified": "2018-04-20T09:40:59.000000",
-                         "bytes": 0, "name": "o",
-                         "content_type": "application/octet-stream"}]))
+            body.encode('utf-8'))
         self.app.register(
             'DELETE', '/v1/a/c%2Fd1%2Fd2%2Fd3/o', swob.HTTPNoContent, {})
 

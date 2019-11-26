@@ -1,5 +1,5 @@
 # Copyright (c) 2010-2012 OpenStack Foundation
-# Copyright (c) 2016-2018 OpenIO SAS
+# Copyright (c) 2016-2019 OpenIO SAS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ import json
 import mimetypes
 import time
 import math
+
+from six import iteritems
 
 from swift import gettext_ as _
 from swift.common.utils import (
@@ -268,7 +270,7 @@ class ObjectController(BaseObjectController):
             min_chunks = storage_method.ec_nb_data if storage_method.ec else 1
 
             chunks_by_pos = _sort_chunks(chunks, storage_method.ec)
-            for idx, entries in enumerate(chunks_by_pos.iteritems()):
+            for idx, entries in enumerate(iteritems(chunks_by_pos)):
                 if idx != entries[0]:
                     return HTTPBadRequest(request=req)
                 nb_chunks_ok = 0
@@ -332,7 +334,7 @@ class ObjectController(BaseObjectController):
                 'mime_type', 'application/octet-stream')
         properties = metadata.get('properties')
         if properties:
-            for k, v in properties.iteritems():
+            for k, v in properties.items():
                 if is_sys_or_user_meta('object', k) or \
                         is_object_transient_sysmeta(k) or \
                         k.lower() in self.allowed_headers:
@@ -359,7 +361,7 @@ class ObjectController(BaseObjectController):
     def load_object_metadata(self, headers):
         metadata = {}
         metadata.update(
-            (k.lower(), v) for k, v in headers.iteritems()
+            (k.lower(), v) for k, v in headers.items()
             if is_sys_or_user_meta('object', k) or
             is_object_transient_sysmeta(k))
         for header_key in self.allowed_headers:
