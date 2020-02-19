@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2019 OpenIO SAS
+# Copyright (C) 2017-2018 OpenIO SAS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -184,8 +184,7 @@ class AutoContainerBase(object):
         if obj is None:
             # This is probably an account request
             return self.app(env, start_response)
-        newpath = "/v1/%s/%s/%s" % (account, container, obj)
-        env['PATH_INFO'] = newpath.encode('utf-8')
+        env['PATH_INFO'] = "/v1/%s/%s/%s" % (account, container, obj)
 
         for hdr in ("HTTP_OIO_COPY_FROM", "HTTP_X_COPY_FROM"):
             if hdr in env:
@@ -203,8 +202,8 @@ class AutoContainerBase(object):
 
         def modify_copy_from(orig_env, alternative):
             env_ = orig_env.copy()
-            env_[from_header] = ("/%s/%s" % (
-                quote_plus(alternative[1]), alternative[2])).encode('utf-8')
+            env_[from_header] = "/%s/%s" % (
+                quote_plus(alternative[1]), alternative[2])
             return env_
 
         def check_container_obj(alternative):
@@ -238,8 +237,7 @@ class AutoContainerBase(object):
         """
         def modify_path_info(orig_env, alternative):
             env_ = orig_env.copy()
-            new_path_str = ('/'.join(('', 'v1') + alternative))
-            env_['PATH_INFO'] = new_path_str.encode('utf-8')
+            env_['PATH_INFO'] = '/'.join(('', 'v1') + alternative)
             return env_
 
         def check_obj(alternative):
